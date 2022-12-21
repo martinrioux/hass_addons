@@ -20,4 +20,4 @@ options:
   password: "mqtt_password"
 schema:
   username: str
-  password: str?
+  password: password
