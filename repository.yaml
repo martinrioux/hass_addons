@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: Python MQTT Soundboard
-url: 'https://github.com/martinrioux/hassos_python_mqtt_soundboard'
+name: "Home Assistant Add-Ons by Martin Rioux"
+url: 'https://github.com/martinrioux/hass_addons'
 maintainer: Martin Rioux <martin.rioux2@gmail.com>

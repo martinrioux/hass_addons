@@ -1,1 +1,1 @@
-# Home Assistant Python MQTT Soundboard
+# Home Assistant Addons by Martin Rioux
