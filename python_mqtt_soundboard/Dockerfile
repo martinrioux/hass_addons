@@ -1,5 +1,5 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
-FROM python:alpine3.17
+FROM python:3.7-alpine3.16
 
 WORKDIR /usr/src/app
 
