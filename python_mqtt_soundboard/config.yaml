@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
 name: Python MQTT Soundboard
-version: "1.0.1"
+version: "1.0.2"
 slug: python-mqtt-dashboard
 description: Python MQTT Soundboard
 url: "https://github.com/martinrioux/hassos_python_mqtt_soundboard"
@@ -17,7 +17,7 @@ devices:
   - /dev/snd:/dev/snd:rwm
 options:
   username: "mqtt_user"
-  password: "mqtt_user"
+  password: "mqtt_password"
 schema:
   username: str
-  password: str
+  password: str?
