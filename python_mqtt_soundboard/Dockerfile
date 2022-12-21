@@ -1,5 +1,5 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
-FROM python:3.7-alpine3.16
+FROM python:3.9-alpine3.16
 
 RUN apk add --no-cache alsa-lib
 
