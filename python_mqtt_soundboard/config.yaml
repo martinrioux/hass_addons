@@ -13,7 +13,8 @@ arch:
 init: false
 map:
   - media:rw
-  - /dev/snd
+devices:
+  - /dev/snd:/dev/snd:rwm
 options:
   username: "mqtt_user"
   password: "mqtt_user"
