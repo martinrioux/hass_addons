@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: Example Home Assistant add-on repository
-url: 'https://github.com/home-assistant/addons-example'
-maintainer: Awesome Maintainer <awesome@example.com>
+name: Python MQTT Soundboard
+url: 'https://github.com/martinrioux/hassos_python_mqtt_soundboard'
+maintainer: Martin Rioux <martin.rioux2@gmail.com>
