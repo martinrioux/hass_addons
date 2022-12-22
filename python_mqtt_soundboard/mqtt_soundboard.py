@@ -1,7 +1,12 @@
 
+import os
 from pygame import mixer
 from paho.mqtt import client as mqtt_client
 import time
+
+
+os.environ['SDL_AUDIODRIVER'] = 'dsp'
+
 
 #Instantiate mixer
 mixer.init()
