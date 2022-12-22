@@ -63,12 +63,12 @@ class MQTTSoundboard:
             except (TypeError, IndexError):
                 delay = 3
             for sound in self.sounds:
-                sound.stop()
+                self.sounds[sound].stop()
             mixer.music.fadeout(delay)
         # STOP
         elif args[0] == "stop":
             for sound in self.sounds:
-                sound.stop()
+                self.sounds[sound].stop()
             mixer.music.stop()
         # PAUSE
         elif args[0] == "pause":
