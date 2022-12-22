@@ -1,6 +1,6 @@
 <!-- https://developers.home-assistant.io/docs/add-ons/presentation#keeping-a-changelog -->
 
-## 1.1.1
+## 1.1.2
 - Removed recursive loop
 
 ## 1.1.0

@@ -9,6 +9,7 @@ import ujson
 with open("/data/options.json", "r") as f:
     options = f.read()
 config = ujson.loads(options)
+raise Exception(options)
 
 mqtt_host = config.get('mqtt_host')
 mqtt_port = int(config.get('mqtt_port'))
