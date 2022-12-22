@@ -1,48 +1,142 @@
 
+import os
 from pygame import mixer
+from pygame import error as pygame_error
 from paho.mqtt import client as mqtt_client
 import time
+import ujson
 
-#Instantiate mixer
+with open("/data/options.json", "r") as f:
+    options = f.read()
+config = ujson.loads(options)
+
+mqtt_host = config.get('mqtt_host')
+mqtt_port = int(config.get('mqtt_port'))
+mqtt_username = config.get('mqtt_username')
+mqtt_password = config.get('mqtt_password')
+
 mixer.init()
 
-#Load audio file
-mixer.music.load('/media/epic_bwaap.mp3')
+media_folder = "/media/"
 
-print("music started playing....")
 
-#Set preferred volume
-mixer.music.set_volume(0.2)
+class MQTTSoundboard:
+    def __init__(self):
+        self.mqtt = None
+        self.subscribed_topic = ["soundboard/#"]
+        self.sounds = {}
+        self.volume = 0.5
+        self.loop_music = False
 
-#Play the music
-mixer.music.play()
+    def start(self):
+        self.connect_mqtt()
 
-#Infinite loop
-while True:
-    mixer.music.play()
-    time.sleep(10)
-    mixer.music.stop()
-# 	print("------------------------------------------------------------------------------------")
-# 	print("Press 'p' to pause the music")
-# 	print("Press 'r' to resume the music")
-# 	print("Press 'e' to exit the program")
+    def connect_mqtt(self):
+        self.mqtt = mqtt_client.Client()
+        self.mqtt.username_pw_set(mqtt_username, mqtt_password)
+        self.mqtt.on_connect = self._on_connect
+        self.mqtt.on_disconnect = self._on_disconnect
+        self.mqtt.message_callback_add("soundboard/music", self.music_callback)
+        self.mqtt.message_callback_add("soundboard/sound", self.sound_callback)
+        self.mqtt.message_callback_add("soundboard/volume", self.volume_callback)
+        self.mqtt.connect_async(mqtt_host, mqtt_port)
+        self.mqtt.loop_forever()
 
-# 	#take user input
-# 	userInput = input(" ")
+    def _on_connect(self, client, userdata, flags, rc):
+        for topic in self.subscribed_topic:
+            self.mqtt.subscribe(topic, qos=0)
 
-# 	if userInput == 'p':
+    def _on_disconnect(self, client, userdata, rc):
+        """MQTT Disconnect callback."""
+        self.mqtt.loop_stop()
+        self.connect_mqtt()
 
-# 		# Pause the music
-# 		mixer.music.pause()
-# 		print("music is paused....")
-# 	elif userInput == 'r':
+    def _on_message(self, client, userdata, message):
+        pass
 
-# 		# Resume the music
-# 		mixer.music.unpause()
-# 		print("music is resumed....")
-# 	elif userInput == 'e':
+    def music_callback(self, client, userdata, message):
+        payload: str = message.payload.decode("UTF-8", "ignore")
+        args = payload.split(",")
+        # FADEOUT
+        if args[0] == "fadeout":
+            try:
+                delay = int(args[1])
+            except (TypeError, IndexError):
+                delay = 3
+            for sound in self.sounds:
+                sound.stop()
+            mixer.music.fadeout(delay)
+        # STOP
+        elif args[0] == "stop":
+            for sound in self.sounds:
+                sound.stop()
+            mixer.music.stop()
+        # PAUSE
+        elif args[0] == "pause":
+            mixer.music.pause()
+        # START
+        elif args[0] == "play":
+            try:
+                if self.loop_music:
+                    mixer.music.play(-1)
+                else:
+                    mixer.music.play()
+            except pygame_error:
+                pass
+        # ENABLE MUSIC LOOP
+        elif args[0] == "loop_on":
+            self.loop_music = True
+        # DISABLE MUSIC LOOP
+        elif args[0] == "loop_off":
+            self.loop_music = False
+        # PLAY NEW MUSIC
+        else:
+            mixer.music.stop()
+            file = f"{media_folder}{args[0]}"
+            if not os.path.exists(file):
+                print(f"Music file '{file}' not found")
+                return
+            mixer.music.load(file)
+            mixer.music.set_volume(self.volume)
+            if self.loop_music:
+                mixer.music.play(loops=-1, start=0.0, fade_ms=1500)
+            else:
+                mixer.music.play()
 
-# 		# Stop the music playback
-# 		mixer.music.stop()
-# 		print("music is stopped....")
-# 		break
+    def sound_callback(self, client, userdata, message):
+        payload: str = message.payload.decode("UTF-8", "ignore")
+        args = payload.split(",")
+
+        if args[0] not in self.sounds:
+            file = f"{media_folder}{args[0]}"
+            if not os.path.exists(file):
+                print(f"Sound file '{file}' not found")
+                return
+            self.sounds[args[0]] = mixer.Sound(file)
+        else:
+            self.sounds[payload].stop()
+        self.sounds[payload].set_volume(self.volume)
+        self.sounds[payload].play()
+
+    def volume_callback(self, client, userdata, message):
+        payload: str = message.payload.decode("UTF-8", "ignore")
+        if payload.startswith("+"):
+            self.volume += int(payload[1:])/100
+        elif payload.startswith("-"):
+            self.volume -= int(payload[1:])/100
+        else:
+            self.volume = int(payload)/100
+
+        if self.volume < 0:
+            self.volume = 0
+        elif self.volume > 1:
+            self.volume = 1
+        print(f"New volume: {self.volume}")
+        mixer.music.set_volume(self.volume)
+        for sound in self.sounds:
+            sound.set_volume(self.volume)
+
+
+if __name__ == "__main__":
+    app = MQTTSoundboard()
+    app.start()

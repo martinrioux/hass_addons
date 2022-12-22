@@ -6,7 +6,7 @@ RUN apt-get install -y libasound2-plugins
 
 WORKDIR /usr/src/app
 
-RUN pip install --no-cache-dir pygame paho-mqtt
+RUN pip install --no-cache-dir pygame paho-mqtt ujson
 
 COPY mqtt_soundboard.py ./
 
