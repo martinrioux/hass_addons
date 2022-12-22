@@ -5,6 +5,7 @@ from pygame import error as pygame_error
 from paho.mqtt import client as mqtt_client
 import time
 import ujson
+import logging
 
 with open("/data/options.json", "r") as f:
     options = f.read()
@@ -19,6 +20,7 @@ mixer.init()
 
 media_folder = "/media/"
 
+logging.info("Python MQTT Soundboard starting")
 
 class MQTTSoundboard:
     def __init__(self):
@@ -48,6 +50,7 @@ class MQTTSoundboard:
 
     def _on_disconnect(self, client, userdata, rc):
         """MQTT Disconnect callback."""
+        logging.error("Python MQTT Soundboard lost MQTT connection")
         self.mqtt.loop_stop()
 
     def _on_message(self, client, userdata, message):
@@ -93,7 +96,7 @@ class MQTTSoundboard:
             mixer.music.stop()
             file = f"{media_folder}{args[0]}"
             if not os.path.exists(file):
-                print(f"Music file '{file}' not found")
+                logging.error(f"Music file '{file}' not found")
                 return
             mixer.music.load(file)
             mixer.music.set_volume(self.volume)
@@ -109,7 +112,7 @@ class MQTTSoundboard:
         if args[0] not in self.sounds:
             file = f"{media_folder}{args[0]}"
             if not os.path.exists(file):
-                print(f"Sound file '{file}' not found")
+                logging.error(f"Sound file '{file}' not found")
                 return
             self.sounds[args[0]] = mixer.Sound(file)
         else:
@@ -130,7 +133,7 @@ class MQTTSoundboard:
             self.volume = 0
         elif self.volume > 1:
             self.volume = 1
-        print(f"New volume: {self.volume}")
+        logging.info(f"New volume: {self.volume}")
         mixer.music.set_volume(self.volume)
         for sound in self.sounds:
             self.sounds[sound].set_volume(self.volume)
@@ -140,3 +143,4 @@ if __name__ == "__main__":
     app = MQTTSoundboard()
     while True:
         app.start()
+        logging.error("Python MQTT Soundboard stopped and will restart")
