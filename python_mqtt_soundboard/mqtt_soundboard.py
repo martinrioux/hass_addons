@@ -49,7 +49,6 @@ class MQTTSoundboard:
     def _on_disconnect(self, client, userdata, rc):
         """MQTT Disconnect callback."""
         self.mqtt.loop_stop()
-        self.connect_mqtt()
 
     def _on_message(self, client, userdata, message):
         pass
@@ -139,4 +138,5 @@ class MQTTSoundboard:
 
 if __name__ == "__main__":
     app = MQTTSoundboard()
-    app.start()
+    while True:
+        app.start()
