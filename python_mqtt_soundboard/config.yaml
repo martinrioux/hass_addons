@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
 name: Python MQTT Soundboard
-version: "1.0.5"
+version: "1.0.6"
 slug: python-mqtt-dashboard
 description: Python MQTT Soundboard
 url: "https://github.com/martinrioux/hassos_python_mqtt_soundboard"
