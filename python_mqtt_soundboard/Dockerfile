@@ -1,12 +1,9 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
-FROM python:3.9-alpine3.16
-
-RUN apk add --no-cache alsa-lib sdl2-dev
+FROM python:3.9-bullseye
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir pygame paho-mqtt
 
 COPY mqtt_soundboard.py ./
 
