@@ -122,12 +122,15 @@ class MQTTSoundboard:
 
     def volume_callback(self, client, userdata, message):
         payload: str = message.payload.decode("UTF-8", "ignore")
-        if payload.startswith("+"):
-            self.volume += int(payload[1:])/100
-        elif payload.startswith("-"):
-            self.volume -= int(payload[1:])/100
-        else:
-            self.volume = int(payload)/100
+        try:
+            if payload.startswith("+"):
+                self.volume += int(payload[1:])/100
+            elif payload.startswith("-"):
+                self.volume -= int(payload[1:])/100
+            else:
+                self.volume = int(payload)/100
+        except ValueError:
+            pass
 
         if self.volume < 0:
             self.volume = 0
