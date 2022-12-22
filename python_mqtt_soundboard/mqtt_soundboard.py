@@ -133,7 +133,7 @@ class MQTTSoundboard:
         print(f"New volume: {self.volume}")
         mixer.music.set_volume(self.volume)
         for sound in self.sounds:
-            sound.set_volume(self.volume)
+            self.sounds[sound].set_volume(self.volume)
 
 
 if __name__ == "__main__":
