@@ -2,7 +2,7 @@
 FROM python:3.9-bullseye
 
 RUN apt-get update
-RUN apt-get install -y libasound2
+RUN apt-get install -y libasound2-plugins
 
 WORKDIR /usr/src/app
 
